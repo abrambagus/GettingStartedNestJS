@@ -5,9 +5,9 @@ import * as bcrypt from 'bcryptjs';
 import { userCreateDto } from './models/user-create.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { userUpdateDto } from './models/user-update.dto';
-import { PaginatedResult } from 'src/common/paginated-result.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
+import { HasPermission } from 'src/permission/has-permission.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(AuthGuard)
@@ -22,11 +22,13 @@ export class UserController {
     }
 
     @Get()
+    @HasPermission('users')
     async all(@Query('page') page= 1){
             return this.userService.paginate(page, ['role'])
         }
 
     @Post()
+    @HasPermission('users')
     async create(@Body() body: userCreateDto): Promise<User>{
         const password = await bcrypt.hash('1234', 12)
 
@@ -41,11 +43,13 @@ export class UserController {
 
 
     @Get(':id')
+    @HasPermission('users')
     async get(@Param('id') id: number) {
             return this.userService.findOne({id}, ['role'])
     }
 
     @Put('info')
+    @HasPermission('users')
     async updateInfo(
         @Req() request: Request,
         @Body() body: userUpdateDto
@@ -79,6 +83,7 @@ export class UserController {
     }
 
     @Put(':id')
+    @HasPermission('users')
     async update(@Param('id') id: number, @Body() body: userUpdateDto) {
             const {role_id, ...data} = body
             await this.userService.update(id, {
@@ -90,6 +95,7 @@ export class UserController {
 
 
     @Delete(':id')
+    @HasPermission('users')
     async delete(@Param('id') id: number) {
             return this.userService.delete(id)
     }
