@@ -60,7 +60,7 @@ export class OrderController {
         return res.send(csv)
     }
 
-    @Get('orders')
+    @Get('chart')
     @HasPermission('orders')
     async chart(){
         return this.orderService.chart()
